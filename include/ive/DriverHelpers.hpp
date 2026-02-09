@@ -2,9 +2,8 @@
 
 #include "ive/AST.hpp"
 
-#include <mlir/IR/BuiltinOps.h>
-
 #include <llvm/Support/CommandLine.h>
+#include <mlir/IR/BuiltinOps.h>
 
 #include <string>
 

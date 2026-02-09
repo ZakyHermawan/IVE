@@ -10,14 +10,14 @@
 #include "ive/AST.hpp"
 #include "ive/Lexer.hpp"
 
-#include "llvm/ADT/STLExtras.h"
-#include "llvm/ADT/StringExtras.h"
-#include "llvm/Support/raw_ostream.h"
+#include <llvm/ADT/STLExtras.h>
+#include <llvm/ADT/StringExtras.h>
+#include <llvm/Support/raw_ostream.h>
 
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
-#include <optional>
 
 namespace ive {
 
@@ -105,8 +105,7 @@ private:
   /// and identifier and an optional type (shape specification) before the
   /// optionally required initializer.
   /// decl ::= var identifier [ type ] (= expr)?
-  std::unique_ptr<VarDeclExprAST>
-  parseVarDeclaration(bool requiresInitializer);
+  std::unique_ptr<VarDeclExprAST> parseVarDeclaration(bool requiresInitializer);
 
   /// Parse a block: a list of expression separated by semicolons and wrapped in
   /// curly braces.

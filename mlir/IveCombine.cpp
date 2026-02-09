@@ -5,15 +5,17 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "mlir/IR/BuiltinAttributes.h"
-#include "mlir/IR/MLIRContext.h"
-#include "mlir/IR/OpDefinition.h"
-#include "mlir/IR/PatternMatch.h"
-#include "mlir/IR/Value.h"
 #include "ive/Dialect.hpp"
-#include "llvm/Support/Casting.h"
+
+#include <llvm/Support/Casting.h>
+#include <mlir/IR/BuiltinAttributes.h>
+#include <mlir/IR/MLIRContext.h>
+#include <mlir/IR/OpDefinition.h>
+#include <mlir/IR/PatternMatch.h>
+#include <mlir/IR/Value.h>
 
 #include <cstddef>
+
 using namespace mlir;
 using namespace ive;
 

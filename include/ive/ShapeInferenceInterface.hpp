@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mlir/IR/OpDefinition.h"
+#include <mlir/IR/OpDefinition.h>
 
 namespace mlir {
 namespace ive {

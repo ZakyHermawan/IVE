@@ -6,27 +6,29 @@
 //===----------------------------------------------------------------------===//
 
 #include "ive/MLIRGen.hpp"
-#include "mlir/IR/Block.h"
-#include "mlir/IR/Diagnostics.h"
-#include "mlir/IR/Value.h"
 #include "ive/AST.hpp"
 #include "ive/Dialect.hpp"
-
-#include "mlir/IR/Attributes.h"
-#include "mlir/IR/Builders.h"
-#include "mlir/IR/BuiltinOps.h"
-#include "mlir/IR/BuiltinTypes.h"
-#include "mlir/IR/MLIRContext.h"
-#include "mlir/IR/Verifier.h"
 #include "ive/Lexer.hpp"
 
-#include "llvm/ADT/STLExtras.h"
-#include "llvm/ADT/ScopedHashTable.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringMap.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/Twine.h"
-#include "llvm/Support/ErrorHandling.h"
+#include <mlir/IR/Block.h>
+#include <mlir/IR/Diagnostics.h>
+#include <mlir/IR/Value.h>
+
+#include <mlir/IR/Attributes.h>
+#include <mlir/IR/Builders.h>
+#include <mlir/IR/BuiltinOps.h>
+#include <mlir/IR/BuiltinTypes.h>
+#include <mlir/IR/MLIRContext.h>
+#include <mlir/IR/Verifier.h>
+
+#include <llvm/ADT/STLExtras.h>
+#include <llvm/ADT/ScopedHashTable.h>
+#include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/StringMap.h>
+#include <llvm/ADT/StringRef.h>
+#include <llvm/ADT/Twine.h>
+#include <llvm/Support/ErrorHandling.h>
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>

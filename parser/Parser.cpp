@@ -1,14 +1,11 @@
-#include "ive/AST.hpp"
 #include "ive/Parser.hpp"
+#include "ive/AST.hpp"
 
 #include <memory>
 
 namespace ive {
 
-Parser::Parser(Lexer& lexer)
-	: m_lexer(lexer)
-{
-}
+Parser::Parser(Lexer &lexer) : m_lexer(lexer) {}
 
 std::unique_ptr<ModuleAST> Parser::parseModule() {
   m_lexer.getNextToken(); // prime the lexer
@@ -28,7 +25,7 @@ std::unique_ptr<ModuleAST> Parser::parseModule() {
       break;
     default:
       return parseError<ModuleAST>("'def' or 'struct'",
-                                    "when parsing top level module records");
+                                   "when parsing top level module records");
     }
     if (!record) {
       break;
@@ -43,7 +40,6 @@ std::unique_ptr<ModuleAST> Parser::parseModule() {
 
   return std::make_unique<ModuleAST>(std::move(records));
 }
-
 
 std::unique_ptr<ReturnExprAST> Parser::parseReturn() {
   auto loc = m_lexer.getLastLocation();
@@ -113,7 +109,7 @@ std::unique_ptr<ExprAST> Parser::parseTensorLiteralExpr() {
     auto *firstLiteral = llvm::dyn_cast<LiteralExprAST>(values.front().get());
     if (!firstLiteral)
       return parseError<ExprAST>("uniform well-nested dimensions",
-                                  "inside literal expression");
+                                 "inside literal expression");
 
     // Append the nested dimensions to the current level
     auto firstDims = firstLiteral->getDims();
@@ -124,10 +120,10 @@ std::unique_ptr<ExprAST> Parser::parseTensorLiteralExpr() {
       auto *exprLiteral = llvm::cast<LiteralExprAST>(expr.get());
       if (!exprLiteral)
         return parseError<ExprAST>("uniform well-nested dimensions",
-                                    "inside literal expression");
+                                   "inside literal expression");
       if (exprLiteral->getDims() != firstDims)
         return parseError<ExprAST>("uniform well-nested dimensions",
-                                    "inside literal expression");
+                                   "inside literal expression");
     }
   }
   return std::make_unique<LiteralExprAST>(std::move(loc), std::move(values),
@@ -153,7 +149,7 @@ std::unique_ptr<ExprAST> Parser::parseStructLiteralExpr() {
     } else {
       if (m_lexer.getCurrToken() != '{')
         return parseError<ExprAST>("{, [, or number",
-                                    "in struct literal expression");
+                                   "in struct literal expression");
       values.push_back(parseStructLiteralExpr());
     }
 
@@ -169,7 +165,7 @@ std::unique_ptr<ExprAST> Parser::parseStructLiteralExpr() {
   } while (true);
   if (values.empty())
     return parseError<ExprAST>("<something>",
-                                "to fill struct literal expression");
+                               "to fill struct literal expression");
   m_lexer.getNextToken(); // eat }
 
   return std::make_unique<StructLiteralExprAST>(std::move(loc),
@@ -189,15 +185,14 @@ std::unique_ptr<ExprAST> Parser::parseParenExpr() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseCallExpr(llvm::StringRef name,
-                                        const Location &loc) {
+                                               const Location &loc) {
   m_lexer.consume(Token('('));
   std::vector<std::unique_ptr<ExprAST>> args;
   if (m_lexer.getCurrToken() != ')') {
     while (true) {
       if (auto arg = parseExpression()) {
         args.push_back(std::move(arg));
-      }
-      else
+      } else
         return nullptr;
 
       if (m_lexer.getCurrToken() == ')')
@@ -219,8 +214,7 @@ std::unique_ptr<ExprAST> Parser::parseCallExpr(llvm::StringRef name,
   }
 
   // Call to a user-defined function
-  return std::make_unique<CallExprAST>(loc, std::string(name),
-                                        std::move(args));
+  return std::make_unique<CallExprAST>(loc, std::string(name), std::move(args));
 }
 
 std::unique_ptr<ExprAST> Parser::parseIdentifierExpr() {
@@ -240,7 +234,7 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
   switch (m_lexer.getCurrToken()) {
   default:
     llvm::errs() << "unknown token '" << m_lexer.getCurrToken()
-                  << "' when expecting an expression\n";
+                 << "' when expecting an expression\n";
     return nullptr;
   case tok_identifier:
     return parseIdentifierExpr();
@@ -260,7 +254,7 @@ std::unique_ptr<ExprAST> Parser::parsePrimary() {
 }
 
 std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int exprPrec,
-                                        std::unique_ptr<ExprAST> lhs) {
+                                               std::unique_ptr<ExprAST> lhs) {
   // If this is a binop, find its precedence.
   while (true) {
     int tokPrec = getTokPrecedence();
@@ -290,8 +284,8 @@ std::unique_ptr<ExprAST> Parser::parseBinOpRHS(int exprPrec,
     }
 
     // Merge lhs/RHS.
-    lhs = std::make_unique<BinaryExprAST>(std::move(loc), binOp,
-                                          std::move(lhs), std::move(rhs));
+    lhs = std::make_unique<BinaryExprAST>(std::move(loc), binOp, std::move(lhs),
+                                          std::move(rhs));
   }
 }
 
@@ -337,8 +331,8 @@ std::unique_ptr<ExprAST> Parser::parseDeclarationOrCallExpr() {
 }
 
 std::unique_ptr<VarDeclExprAST>
-Parser::parseTypedDeclaration(llvm::StringRef typeName, bool requiresInitializer,
-                      const Location &loc) {
+Parser::parseTypedDeclaration(llvm::StringRef typeName,
+                              bool requiresInitializer, const Location &loc) {
   // Parse the variable name.
   if (m_lexer.getCurrToken() != tok_identifier)
     return parseError<VarDeclExprAST>("name", "in variable declaration");
@@ -361,7 +355,8 @@ Parser::parseTypedDeclaration(llvm::StringRef typeName, bool requiresInitializer
                                           std::move(expr));
 }
 
-std::unique_ptr<VarDeclExprAST> Parser::parseDeclaration(bool requiresInitializer) {
+std::unique_ptr<VarDeclExprAST>
+Parser::parseDeclaration(bool requiresInitializer) {
   // Check to see if this is a 'var' declaration.
   if (m_lexer.getCurrToken() == tok_var)
     return parseVarDeclaration(requiresInitializer);
@@ -385,8 +380,7 @@ Parser::parseVarDeclaration(bool requiresInitializer) {
   m_lexer.getNextToken(); // eat var
 
   if (m_lexer.getCurrToken() != tok_identifier)
-    return parseError<VarDeclExprAST>("identified",
-                                      "after 'var' declaration");
+    return parseError<VarDeclExprAST>("identified", "after 'var' declaration");
   std::string id(m_lexer.getId());
   m_lexer.getNextToken(); // eat id
 
@@ -507,8 +501,8 @@ std::unique_ptr<PrototypeAST> Parser::parsePrototype() {
         break;
       m_lexer.consume(Token(','));
       if (m_lexer.getCurrToken() != tok_identifier)
-        return parseError<PrototypeAST>(
-            "identifier", "after ',' in function parameter list");
+        return parseError<PrototypeAST>("identifier",
+                                        "after ',' in function parameter list");
     } while (true);
   }
   if (m_lexer.getCurrToken() != ')')
@@ -552,8 +546,7 @@ std::unique_ptr<StructAST> Parser::parseStruct() {
     decls.push_back(std::move(decl));
 
     if (m_lexer.getCurrToken() != ';')
-      return parseError<StructAST>(";",
-                                    "after variable in struct definition");
+      return parseError<StructAST>(";", "after variable in struct definition");
     m_lexer.consume(Token(';'));
   } while (m_lexer.getCurrToken() != '}');
 

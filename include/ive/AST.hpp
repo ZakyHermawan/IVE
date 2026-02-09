@@ -9,12 +9,12 @@
 
 #include "ive/Lexer.hpp"
 
-#include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/Support/Casting.h"
+#include <llvm/ADT/ArrayRef.h>
+#include <llvm/ADT/StringRef.h>
+#include <llvm/Support/Casting.h>
+#include <optional>
 #include <utility>
 #include <vector>
-#include <optional>
 
 namespace ive {
 
