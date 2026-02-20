@@ -6,7 +6,7 @@
 #include "ive/Parser.hpp"
 #include "ive/Passes.hpp"
 
-#include <mlir/Dialect/Affine/Passes.h>
+#include <mlir/Dialect/Affine/Transforms/Passes.h>
 #include <mlir/Dialect/LLVMIR/Transforms/Passes.h>
 #include <mlir/ExecutionEngine/ExecutionEngine.h>
 #include <mlir/ExecutionEngine/OptUtils.h>
