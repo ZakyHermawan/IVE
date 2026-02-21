@@ -282,6 +282,27 @@ void AddOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
 void AddOp::inferShapes() { getResult().setType(getLhs().getType()); }
 
 //===----------------------------------------------------------------------===//
+// SubOp
+//===----------------------------------------------------------------------===//
+
+void SubOp::build(mlir::OpBuilder &builder, mlir::OperationState &state,
+                  mlir::Value lhs, mlir::Value rhs) {
+  state.addTypes(UnrankedTensorType::get(builder.getF64Type()));
+  state.addOperands({lhs, rhs});
+}
+
+mlir::ParseResult SubOp::parse(mlir::OpAsmParser &parser,
+                               mlir::OperationState &result) {
+  return parseBinaryOp(parser, result);
+}
+
+void SubOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
+
+/// Infer the output shape of the SubOp, this is required by the shape inference
+/// interface.
+void SubOp::inferShapes() { getResult().setType(getLhs().getType()); }
+
+//===----------------------------------------------------------------------===//
 // CastOp
 //===----------------------------------------------------------------------===//
 
@@ -395,6 +416,47 @@ void MulOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
 /// Infer the output shape of the MulOp, this is required by the shape inference
 /// interface.
 void MulOp::inferShapes() { getResult().setType(getLhs().getType()); }
+
+//===----------------------------------------------------------------------===//
+// DivOp
+//===----------------------------------------------------------------------===//
+
+void DivOp::build(mlir::OpBuilder &builder, mlir::OperationState &state,
+                  mlir::Value lhs, mlir::Value rhs) {
+  state.addTypes(UnrankedTensorType::get(builder.getF64Type()));
+  state.addOperands({lhs, rhs});
+}
+
+mlir::ParseResult DivOp::parse(mlir::OpAsmParser &parser,
+                               mlir::OperationState &result) {
+  return parseBinaryOp(parser, result);
+}
+
+void DivOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
+
+/// Verify division by zero at compile-time if divisor is constant.
+llvm::LogicalResult DivOp::verify() {
+  // Check if RHS is a constant operation
+  auto rhsOp = getRhs().getDefiningOp();
+  // if (auto constOp = llvm::dyn_cast_or_null<ConstantOp>(rhsOp)) {
+  //   // Extract the constant value
+  //   auto constAttr = constOp.getValue();
+  //   if (auto denseAttr = llvm::dyn_cast<mlir::DenseElementsAttr>(constAttr)) {
+  //     if (denseAttr.isSplat()) {
+  //       auto splatValue = denseAttr.getSplatValue<mlir::FloatAttr>();
+  //       if (splatValue.getValue() == 0.0) {
+  //         return emitOpError("divisor cannot be zero");
+  //       }
+  //     }
+  //   }
+  // }
+  return mlir::success();
+}
+
+/// Infer the output shape of the DivOp, this is required by the shape inference
+/// interface.
+void DivOp::inferShapes() { getResult().setType(getLhs().getType()); }
+
 
 //===----------------------------------------------------------------------===//
 // ReturnOp

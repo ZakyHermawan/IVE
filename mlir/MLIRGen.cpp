@@ -342,8 +342,12 @@ private:
     switch (binop.getOp()) {
     case '+':
       return AddOp::create(builder, location, lhs, rhs);
+    case '-':
+      return SubOp::create(builder, location, lhs, rhs);
     case '*':
       return MulOp::create(builder, location, lhs, rhs);
+    case '/':
+      return DivOp::create(builder, location, lhs, rhs);
     }
 
     emitError(location, "invalid binary operator '") << binop.getOp() << "'";

@@ -130,6 +130,30 @@ def AddOp : Ive_Op<"add",
 }
 
 //===----------------------------------------------------------------------===//
+// SubOp
+//===----------------------------------------------------------------------===//
+
+def SubOp : Ive_Op<"sub",
+    [Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>]> {
+  let summary = "element-wise substraction operation";
+  let description = [{
+    The "sub" operation performs element-wise substraction between two tensors.
+    The shapes of the tensor operands are expected to match.
+  }];
+
+  let arguments = (ins F64Tensor:$lhs, F64Tensor:$rhs);
+  let results = (outs F64Tensor);
+
+  // Indicate that the operation has a custom parser and printer method.
+  let hasCustomAssemblyFormat = 1;
+
+  // Allow building an SubOp with from the two input operands.
+  let builders = [
+    OpBuilder<(ins "Value":$lhs, "Value":$rhs)>
+  ];
+}
+
+//===----------------------------------------------------------------------===//
 // CastOp
 //===----------------------------------------------------------------------===//
 
@@ -276,6 +300,32 @@ def MulOp : Ive_Op<"mul",
   let builders = [
     OpBuilder<(ins "Value":$lhs, "Value":$rhs)>
   ];
+}
+
+//===----------------------------------------------------------------------===//
+// DivOp
+//===----------------------------------------------------------------------===//
+
+def DivOp : Ive_Op<"div",
+    [Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>]> {
+  let summary = "element-wise division operation";
+  let description = [{
+    The "div" operation performs element-wise division between two tensors.
+    The shapes of the tensor operands are expected to match.
+  }];
+
+  let arguments = (ins F64Tensor:$lhs, F64Tensor:$rhs);
+  let results = (outs F64Tensor);
+
+  // Indicate that the operation has a custom parser and printer method.
+  let hasCustomAssemblyFormat = 1;
+
+  // Allow building an SubOp with from the two input operands.
+  let builders = [
+    OpBuilder<(ins "Value":$lhs, "Value":$rhs)>
+  ];
+
+  let hasVerifier = 1;
 }
 
 //===----------------------------------------------------------------------===//

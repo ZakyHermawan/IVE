@@ -122,8 +122,11 @@ struct BinaryOpLowering : public OpConversionPattern<BinaryOp> {
     return success();
   }
 };
+
 using AddOpLowering = BinaryOpLowering<ive::AddOp, arith::AddFOp>;
+using SubOpLowering = BinaryOpLowering<ive::SubOp, arith::SubFOp>;
 using MulOpLowering = BinaryOpLowering<ive::MulOp, arith::MulFOp>;
+using DivOpLowering = BinaryOpLowering<ive::DivOp, arith::DivFOp>;
 
 //===----------------------------------------------------------------------===//
 // IveToAffine Conversion Patterns: Constant operations
@@ -337,7 +340,7 @@ void IveToAffineLoweringPass::runOnOperation() {
   // Now that the conversion target has been defined, we just need to provide
   // the set of patterns that will lower the Ive operations.
   RewritePatternSet patterns(&getContext());
-  patterns.add<AddOpLowering, ConstantOpLowering, FuncOpLowering, MulOpLowering,
+  patterns.add<AddOpLowering, SubOpLowering, ConstantOpLowering, FuncOpLowering, MulOpLowering, DivOpLowering,
                PrintOpLowering, ReturnOpLowering, TransposeOpLowering>(
       &getContext());
 

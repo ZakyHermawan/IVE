@@ -80,6 +80,7 @@ public:
 
     // Create a loop for each of the dimensions within the shape.
     SmallVector<Value, 4> loopIvs;
+    scf::ForOp outermostLoop;
     for (unsigned i = 0, e = memRefShape.size(); i != e; ++i) {
       auto lowerBound = arith::ConstantIndexOp::create(rewriter, loc, 0);
       auto upperBound =
@@ -87,6 +88,8 @@ public:
       auto step = arith::ConstantIndexOp::create(rewriter, loc, 1);
       auto loop =
           scf::ForOp::create(rewriter, loc, lowerBound, upperBound, step);
+      if (i == 0)
+        outermostLoop = loop;
       for (Operation &nested : make_early_inc_range(*loop.getBody()))
         rewriter.eraseOp(&nested);
       loopIvs.push_back(loop.getInductionVar());
@@ -107,6 +110,15 @@ public:
         memref::LoadOp::create(rewriter, loc, op.getInput(), loopIvs);
     LLVM::CallOp::create(rewriter, loc, getPrintfType(context), printfRef,
                          ArrayRef<Value>({formatSpecifierCst, elementLoad}));
+
+    // Add a final newline after all elements are printed
+    if (memRefShape.size() > 0) {
+      // If there are loops, insert newline after the outermost loop
+      rewriter.setInsertionPointAfter(outermostLoop);
+    }
+    // Always print final newline (whether loops exist or not)
+    LLVM::CallOp::create(rewriter, loc, getPrintfType(context), printfRef,
+                         newLineCst);
 
     // Notify the rewriter that this operation has been removed.
     rewriter.eraseOp(op);

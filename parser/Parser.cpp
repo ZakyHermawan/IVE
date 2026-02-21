@@ -567,6 +567,8 @@ int Parser::getTokPrecedence() {
     return 20;
   case '*':
     return 40;
+  case '/':
+    return 40;
   case '.':
     return 60;
   default:
